@@ -1,7 +1,10 @@
 .list-group-item {
   cursor: pointer;
   &:hover {
-    background-color: aqua;
+    background-color: lightblue;
+  }
+  &.selected {
+    background-color: cornflowerblue;
   }
 }
 

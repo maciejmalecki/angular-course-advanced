@@ -1,5 +1,5 @@
 <ul class="list-group list-group-numbered">
-  <li (click)="selectBook(book.id)" *ngFor="let book of books;" class="list-group-item">
+  <li (click)="selectBook(book.id)" *ngFor="let book of books;" class="list-group-item" [ngClass]="{ selected: book.id === selectedBook?.id}">
     {{ book.title }}, <em>{{ book.author}}</em>
   </li>
 </ul>
