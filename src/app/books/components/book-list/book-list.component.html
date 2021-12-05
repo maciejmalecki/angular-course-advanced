@@ -1,3 +1,21 @@
 <ul class="list-group list-group-numbered">
-  <li *ngFor="let book of books;" class="list-group-item">{{ book.title }}, <em>{{ book.author}}</em></li>
+  <li (click)="selectBook(book.id)" *ngFor="let book of books;" class="list-group-item">
+    {{ book.title }}, <em>{{ book.author}}</em>
+  </li>
 </ul>
+
+<div *ngIf="selectedBook" class="editor">
+  <p class="lead">Edit selected book</p>
+  <div class="mb-3">
+    <label for="title" class="form-label">Title</label>
+    <input type="text" class="form-control" id="title" [value]="selectedBook.title">
+  </div>
+  <div class="mb-3">
+    <label for="author" class="form-label">Author</label>
+    <input type="text" class="form-control" id="author" [value]="selectedBook.author">
+  </div>
+  <div class="mb-3">
+    <label for="description" class="form-label">Description</label>
+    <textarea name="" id="description" rows="5" class="form-control">{{ selectedBook.description }}</textarea>
+  </div>
+</div>

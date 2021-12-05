@@ -12,6 +12,8 @@ export class BookListComponent implements OnInit {
 
   books: Book[];
 
+  selectedBook: Book | undefined = undefined;
+
   constructor(private readonly bookService: BookService) {
     this.books = bookService.getBooks();
   }
@@ -19,4 +21,9 @@ export class BookListComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  selectBook(id: number | undefined): void {
+    if (id) {
+      this.selectedBook = this.bookService.getBook(id);
+    }
+  }
 }
