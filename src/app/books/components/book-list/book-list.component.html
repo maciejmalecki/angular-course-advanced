@@ -19,7 +19,8 @@
     <textarea #description name="" id="description" rows="5" class="form-control">{{ selectedBook.description }}</textarea>
   </div>
 
-  <div class="nav justify-content-end">
+  <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+    <button class="btn btn-light" (click)="cancel()">Cancel</button>
     <button class="btn btn-primary" (click)="saveBook()">Save</button>
   </div>
 </div>

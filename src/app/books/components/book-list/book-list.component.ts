@@ -49,4 +49,8 @@ export class BookListComponent implements OnInit {
       this.books = this.bookService.getBooks();
     }
   }
+
+  cancel() {
+    this.selectedBook = undefined;
+  }
 }
