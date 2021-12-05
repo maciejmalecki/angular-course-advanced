@@ -30,4 +30,14 @@ export class BookService {
   getBook(id: number): Book | undefined {
     return this.books.find(value => value.id === id);
   }
+
+  saveBook(book: Book): void {
+    this.books = this.books.map(value => {
+      if (value.id === book.id) {
+        return book;
+      } else {
+        return value;
+      }
+    });
+  }
 }
