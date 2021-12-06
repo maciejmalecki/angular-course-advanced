@@ -2,6 +2,7 @@ import {BookListComponent} from './book-list.component';
 import {BookService} from "../../services/book.service";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {SharedModule} from "../../../shared/shared.module";
 
 describe('BookListComponent', () => {
   let component: BookListComponent;
@@ -48,9 +49,9 @@ describe('BookListComponent', () => {
     const bookAt = (position: number) => bookList().item(position);
     const clickBookAt = (position: number) => bookAt(position).dispatchEvent(new MouseEvent('click'));
     const editor = () => nativeElement.querySelector(".editor");
-    const cancelButton = () => nativeElement.querySelector("button.btn.btn-light")!;
+    const cancelButton = () => nativeElement.querySelector("button.btn.btn-light")! as HTMLButtonElement;
     const clickCancelButton = () => cancelButton().dispatchEvent(new MouseEvent('click'));
-    const saveButton = () => nativeElement.querySelector("button.btn.btn-primary")!;
+    const saveButton = () => nativeElement.querySelector("button.btn.btn-primary")! as HTMLButtonElement;
     const clickSaveButton = () => saveButton().dispatchEvent(new MouseEvent('click'));
     const title = () => nativeElement.querySelector("input#title")! as HTMLInputElement;
     const author = () => nativeElement.querySelector("input#author")! as HTMLInputElement;
@@ -67,7 +68,7 @@ describe('BookListComponent', () => {
     beforeEach(async () => {
       await TestBed.configureTestingModule({
         declarations: [BookListComponent],
-        imports: [ReactiveFormsModule],
+        imports: [ReactiveFormsModule, SharedModule],
         providers: [BookService]
       }).compileComponents();
     });
@@ -125,6 +126,7 @@ describe('BookListComponent', () => {
       editField(title(), "foo");
       editField(author(), "bar");
       editField(description(), "some description");
+      fixture.detectChanges();
       clickSaveButton();
       fixture.detectChanges();
       // then
@@ -136,6 +138,18 @@ describe('BookListComponent', () => {
         author: "bar",
         description: "some description"
       });
+    });
+
+    it('Disables save button if form is invalid', () => {
+      // given
+      clickBookAt(1);
+      fixture.detectChanges();
+      // when
+      editField(title(), "");
+      fixture.detectChanges();
+      // then
+      const btn = saveButton();
+      expect(btn.disabled).toBeTruthy();
     });
 
   });

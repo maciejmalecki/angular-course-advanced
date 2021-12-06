@@ -2,7 +2,8 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import { BookListComponent } from './components/book-list/book-list.component';
 import {BookService} from "./services/book.service";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {ReactiveFormsModule} from "@angular/forms";
+import {SharedModule} from "../shared/shared.module";
 
 
 @NgModule({
@@ -11,7 +12,8 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
   ],
   imports: [
     CommonModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    SharedModule
   ],
   exports: [
     BookListComponent

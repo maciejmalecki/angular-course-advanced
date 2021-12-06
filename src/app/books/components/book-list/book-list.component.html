@@ -12,20 +12,23 @@
       <label for="title" class="form-label">Title</label>
       <input type="text" class="form-control" name="title" id="title" formControlName="title">
       <div class="invalid-feedback">
-        Please provide a title.
+        {{ formGroup.controls.title.errors | error }}
       </div>
     </div>
     <div class="mb-3">
       <label for="author" class="form-label">Author</label>
       <input type="text" class="form-control" name="author" id="author" formControlName="author">
       <div class="invalid-feedback">
-        Please provide an author.
+        {{ formGroup.controls.author.errors | error }}
       </div>
     </div>
     <div class="mb-3">
       <label for="description" class="form-label">Description</label>
       <textarea name="description" id="description" rows="5" formControlName="description"
                 class="form-control"></textarea>
+      <div class="invalid-feedback">
+        {{ formGroup.controls.description.errors | error }}
+      </div>
     </div>
 
     <div class="d-grid gap-2 d-md-flex justify-content-md-end">

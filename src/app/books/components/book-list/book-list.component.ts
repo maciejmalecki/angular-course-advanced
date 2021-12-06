@@ -19,9 +19,9 @@ export class BookListComponent implements OnInit {
   constructor(private readonly bookService: BookService) {
     this.books = bookService.getBooks();
     this.formGroup = new FormGroup({
-      title: new FormControl('', [Validators.required]),
-      author: new FormControl('', [Validators.required]),
-      description: new FormControl('', [])
+      title: new FormControl('', [Validators.required, Validators.maxLength(20)]),
+      author: new FormControl('', [Validators.required, Validators.maxLength(20)]),
+      description: new FormControl('', [Validators.maxLength(100)])
     });
   }
 
@@ -32,7 +32,7 @@ export class BookListComponent implements OnInit {
     if (id) {
       this.selectedBook = this.bookService.getBook(id);
       if (this.selectedBook) {
-        this.formGroup.setValue({
+        this.formGroup.reset({
           author: this.selectedBook.author,
           title: this.selectedBook.title,
           description: this.selectedBook.description

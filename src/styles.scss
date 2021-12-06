@@ -2,7 +2,9 @@
 @import "~bootstrap/scss/bootstrap";
 
 form {
-  input.ng-invalid {
-    @extend .is-invalid;
+  input,textarea {
+    &.ng-invalid.ng-touched {
+      @extend .is-invalid;
+    }
   }
 }
