@@ -1,7 +1,7 @@
 import {Component, OnInit } from '@angular/core';
 import {BookService} from "../../services/book.service";
 import {Book} from "../../model/book";
-import {FormControl, FormGroup} from "@angular/forms";
+import {FormControl, FormGroup, Validators} from "@angular/forms";
 
 @Component({
   selector: 'app-book-list',
@@ -19,9 +19,9 @@ export class BookListComponent implements OnInit {
   constructor(private readonly bookService: BookService) {
     this.books = bookService.getBooks();
     this.formGroup = new FormGroup({
-      title: new FormControl(),
-      author: new FormControl(),
-      description: new FormControl()
+      title: new FormControl('', [Validators.required]),
+      author: new FormControl('', [Validators.required]),
+      description: new FormControl('', [])
     });
   }
 
