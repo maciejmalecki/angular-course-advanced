@@ -1,7 +1,7 @@
 import {BookListComponent} from './book-list.component';
 import {BookService} from "../../services/book.service";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 describe('BookListComponent', () => {
   let component: BookListComponent;
@@ -67,7 +67,7 @@ describe('BookListComponent', () => {
     beforeEach(async () => {
       await TestBed.configureTestingModule({
         declarations: [BookListComponent],
-        imports: [FormsModule],
+        imports: [ReactiveFormsModule],
         providers: [BookService]
       }).compileComponents();
     });
@@ -115,18 +115,18 @@ describe('BookListComponent', () => {
       expect(editor()).toBeFalsy();
     });
 
-    it('saves modified book to the service', fakeAsync(() => {
+    it('saves modified book to the service', () => {
       // given
       spyOn(bookService, "saveBook").and.callThrough();
       clickBookAt(1);
-      cdt();
+      fixture.detectChanges();
       expect(editor()).toBeTruthy();
       // when
       editField(title(), "foo");
       editField(author(), "bar");
       editField(description(), "some description");
       clickSaveButton();
-      cdt();
+      fixture.detectChanges();
       // then
       expect(editor()).toBeFalsy();
       expect(component.selectedBook).toBeFalsy();
@@ -136,7 +136,7 @@ describe('BookListComponent', () => {
         author: "bar",
         description: "some description"
       });
-    }));
+    });
 
   });
 });

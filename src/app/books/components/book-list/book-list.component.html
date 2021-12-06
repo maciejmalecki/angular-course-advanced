@@ -5,20 +5,20 @@
   </li>
 </ul>
 
-<form (ngSubmit)="saveBook()">
+<form (ngSubmit)="saveBook()" [formGroup]="formGroup">
   <div *ngIf="selectedBook" class="editor">
     <p class="lead">Edit selected book</p>
     <div class="mb-3">
       <label for="title" class="form-label">Title</label>
-      <input type="text" class="form-control" name="title" id="title" [(ngModel)]="selectedBook.title">
+      <input type="text" class="form-control" name="title" id="title" formControlName="title">
     </div>
     <div class="mb-3">
       <label for="author" class="form-label">Author</label>
-      <input type="text" class="form-control" name="author" id="author" [(ngModel)]="selectedBook.author">
+      <input type="text" class="form-control" name="author" id="author" formControlName="author">
     </div>
     <div class="mb-3">
       <label for="description" class="form-label">Description</label>
-      <textarea name="description" id="description" rows="5" [(ngModel)]="selectedBook.description"
+      <textarea name="description" id="description" rows="5" formControlName="description"
                 class="form-control"></textarea>
     </div>
 

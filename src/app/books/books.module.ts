@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import { BookListComponent } from './components/book-list/book-list.component';
 import {BookService} from "./services/book.service";
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 
 @NgModule({
@@ -11,7 +11,7 @@ import {FormsModule} from "@angular/forms";
   ],
   imports: [
     CommonModule,
-    FormsModule
+    ReactiveFormsModule
   ],
   exports: [
     BookListComponent
