@@ -13,15 +13,6 @@ export class BookListComponent implements OnInit {
 
   selectedBook: Book | undefined = undefined;
 
-  @ViewChild("title", { static: false })
-  titleInputComponent!: ElementRef;
-
-  @ViewChild("author", { static: false })
-  authorInputComponent!: ElementRef;
-
-  @ViewChild("description", { static: false })
-  descriptionTextAreaComponent!: ElementRef;
-
   constructor(private readonly bookService: BookService) {
     this.books = bookService.getBooks();
   }
@@ -31,19 +22,18 @@ export class BookListComponent implements OnInit {
 
   selectBook(id: number | undefined): void {
     if (id) {
-      this.selectedBook = this.bookService.getBook(id);
+      const loadedBook = this.bookService.getBook(id);
+      if (loadedBook) {
+        this.selectedBook = { ...loadedBook };
+      } else {
+        this.selectedBook = undefined;
+      }
     }
   }
 
   saveBook(): void {
     if (this.selectedBook) {
-      const updatedBook: Book = {
-        id: this.selectedBook.id,
-        title: this.titleInputComponent.nativeElement.value,
-        author: this.authorInputComponent.nativeElement.value,
-        description: this.descriptionTextAreaComponent.nativeElement.value
-      }
-      this.bookService.saveBook(updatedBook);
+      this.bookService.saveBook(this.selectedBook);
       this.selectedBook = undefined;
       this.books = this.bookService.getBooks();
     }

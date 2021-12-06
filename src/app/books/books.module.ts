@@ -2,6 +2,7 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import { BookListComponent } from './components/book-list/book-list.component';
 import {BookService} from "./services/book.service";
+import {FormsModule} from "@angular/forms";
 
 
 @NgModule({
@@ -9,7 +10,8 @@ import {BookService} from "./services/book.service";
     BookListComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    FormsModule
   ],
   exports: [
     BookListComponent

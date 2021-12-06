@@ -1,6 +1,7 @@
 import {BookListComponent} from './book-list.component';
 import {BookService} from "../../services/book.service";
-import {ComponentFixture, TestBed} from "@angular/core/testing";
+import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
+import {FormsModule} from "@angular/forms";
 
 describe('BookListComponent', () => {
   let component: BookListComponent;
@@ -56,11 +57,17 @@ describe('BookListComponent', () => {
     const description = () => nativeElement.querySelector("textarea#description")! as HTMLTextAreaElement;
     const editField = (field: HTMLInputElement | HTMLTextAreaElement, value: string) => {
       field.value = value;
+      field.dispatchEvent(new Event('input'));
+    };
+    const cdt = (time?: number) => {
+      fixture.detectChanges();
+      tick(time);
     };
 
     beforeEach(async () => {
       await TestBed.configureTestingModule({
         declarations: [BookListComponent],
+        imports: [FormsModule],
         providers: [BookService]
       }).compileComponents();
     });
@@ -108,18 +115,18 @@ describe('BookListComponent', () => {
       expect(editor()).toBeFalsy();
     });
 
-    it('saves modified book to the service', () => {
+    it('saves modified book to the service', fakeAsync(() => {
       // given
       spyOn(bookService, "saveBook").and.callThrough();
       clickBookAt(1);
-      fixture.detectChanges();
+      cdt();
       expect(editor()).toBeTruthy();
       // when
       editField(title(), "foo");
       editField(author(), "bar");
       editField(description(), "some description");
       clickSaveButton();
-      fixture.detectChanges();
+      cdt();
       // then
       expect(editor()).toBeFalsy();
       expect(component.selectedBook).toBeFalsy();
@@ -129,7 +136,7 @@ describe('BookListComponent', () => {
         author: "bar",
         description: "some description"
       });
-    });
+    }));
 
   });
 });
