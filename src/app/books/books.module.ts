@@ -1,6 +1,7 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import { BookListComponent } from './components/book-list/book-list.component';
+import {BookService} from "./services/book.service";
 
 
 @NgModule({
@@ -12,6 +13,9 @@ import { BookListComponent } from './components/book-list/book-list.component';
   ],
   exports: [
     BookListComponent
+  ],
+  providers: [
+    BookService
   ]
 })
 export class BooksModule {
