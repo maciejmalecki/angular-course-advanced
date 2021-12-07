@@ -3,7 +3,12 @@
        class="form-control"
        [attr.name]="name ? name : inputId"
        [attr.id]="inputId"
+       [class.ng-valid]="control?.valid"
+       [class.ng-invalid]="control?.invalid"
        [(ngModel)]="internalValue"
        [disabled]="disabled"
        (input)="input()"
        (blur)="blur()">
+<div class="invalid-feedback">
+  {{ control?.errors | error }}
+</div>
