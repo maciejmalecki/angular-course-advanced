@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, ViewChild} from '@angular/core';
 import {Book} from "../../model/book";
 import {BooksService} from "../../service/books.service";
 
@@ -8,7 +8,7 @@ import {BooksService} from "../../service/books.service";
   styleUrls: ['./book-list.component.scss'],
   providers: [BooksService]
 })
-export class BookListComponent implements OnInit {
+export class BookListComponent {
 
   books: Book[];
 
@@ -23,9 +23,6 @@ export class BookListComponent implements OnInit {
 
   constructor(private readonly bookService: BooksService) {
     this.books = this.bookService.getBooks();
-  }
-
-  ngOnInit(): void {
   }
 
   selectBook(book: Book): void {
@@ -48,5 +45,9 @@ export class BookListComponent implements OnInit {
       this.selectedBook = null;
       this.books = this.bookService.getBooks();
     }
+  }
+
+  cancelEditing(): void {
+    this.selectedBook = null;
   }
 }

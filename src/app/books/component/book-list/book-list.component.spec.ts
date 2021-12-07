@@ -1,25 +1,75 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { BookListComponent } from './book-list.component';
+import {BooksService} from "../../service/books.service";
+import {ComponentFixture, TestBed} from "@angular/core/testing";
 
 describe('BookListComponent', () => {
+
   let component: BookListComponent;
-  let fixture: ComponentFixture<BookListComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ BookListComponent ]
-    })
-    .compileComponents();
+  describe('[class]', () => {
+
+    let bookService: BooksService;
+
+    beforeEach(() => {
+      bookService = new BooksService();
+      component = new BookListComponent(bookService);
+    });
+
+    it('has no selected book initially', () => {
+      expect(component.selectedBook).toBeNull();
+    });
+
+    it('has some books initially', () => {
+      expect(component.books).toHaveSize(3);
+    });
+
+    it('allows to select a book', () => {
+      // given
+      const toBeSelected = component.books[1];
+      // when
+      component.selectBook(toBeSelected);
+      // then
+      expect(component.selectedBook).toEqual(toBeSelected);
+    });
+
+    it('allows to cancel the editing', () => {
+      // given
+      const toBeSelected = component.books[1];
+      component.selectBook(toBeSelected);
+      expect(component.selectedBook).toEqual(toBeSelected);
+      // when
+      component.cancelEditing();
+      // then
+      expect(component.selectedBook).toBeNull();
+    });
   });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(BookListComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+  describe('[DOM]', () => {
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+    let fixture: ComponentFixture<BookListComponent>;
+    let nativeElement: HTMLElement;
+
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
+        declarations: [BookListComponent],
+        providers: [BooksService]
+      }).compileComponents();
+    });
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(BookListComponent);
+      component = fixture.componentInstance;
+      nativeElement = fixture.nativeElement;
+      fixture.detectChanges();
+    });
+
+    it('can be created', () => {
+      expect(component).toBeTruthy();
+    });
+
+    it('renders a list of books', () => {
+      const liElements = nativeElement.querySelectorAll("li.list-group-item");
+      expect(liElements.length).toBe(3);
+    });
   });
 });
