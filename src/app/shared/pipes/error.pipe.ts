@@ -20,8 +20,6 @@ export class ErrorPipe implements PipeTransform {
   transform(value: ValidationErrors | null | undefined): string[] {
     if (value) {
       const keys = Object.keys(value);
-      console.log(keys);
-      console.log(Object.values(value));
       return keys.map(key => translate(key, value[key]));
     } else {
       return [];

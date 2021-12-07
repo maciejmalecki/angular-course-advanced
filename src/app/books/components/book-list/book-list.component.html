@@ -9,8 +9,7 @@
   <div *ngIf="selectedBook" class="editor">
     <p class="lead">Edit selected book</p>
     <div class="mb-3">
-      <label for="title" class="form-label">Title</label>
-      <input type="text" class="form-control" name="title" id="title" formControlName="title">
+      <app-input formControlName="title" inputId="title" title="Title"></app-input>
       <div class="invalid-feedback">
         {{ formGroup.controls.title.errors | error }}
       </div>

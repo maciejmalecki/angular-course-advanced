@@ -1,0 +1,9 @@
+<label [attr.id]="inputId" class="form-label">{{title}}</label>
+<input type="text"
+       class="form-control"
+       [attr.name]="name ? name : inputId"
+       [attr.id]="inputId"
+       [(ngModel)]="internalValue"
+       [disabled]="disabled"
+       (input)="input()"
+       (blur)="blur()">

@@ -19,7 +19,7 @@ export class BookListComponent implements OnInit {
   constructor(private readonly bookService: BookService) {
     this.books = bookService.getBooks();
     this.formGroup = new FormGroup({
-      title: new FormControl('', [Validators.required, Validators.maxLength(20)]),
+      title: new FormControl({value: '', disabled: false} , [Validators.required, Validators.maxLength(20)]),
       author: new FormControl('', [Validators.required, Validators.maxLength(20)]),
       description: new FormControl('', [Validators.maxLength(100)])
     });
