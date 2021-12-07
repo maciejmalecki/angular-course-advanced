@@ -6,7 +6,7 @@ import {BooksService} from "../../service/books.service";
   selector: 'app-book-list',
   templateUrl: './book-list.component.html',
   styleUrls: ['./book-list.component.scss'],
-  providers: [BooksService]
+  providers: []
 })
 export class BookListComponent {
 
