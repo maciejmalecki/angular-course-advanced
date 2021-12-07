@@ -1,4 +1,4 @@
-import {Component, Input, Optional, Self} from '@angular/core';
+import {Component, ElementRef, Input, Optional, Self, ViewChild} from '@angular/core';
 import {ControlValueAccessor, NgControl} from "@angular/forms";
 
 @Component({
@@ -17,10 +17,10 @@ export class InputComponent implements ControlValueAccessor {
   @Input()
   name: string | undefined;
 
-  internalValue: string = '';
-  disabled = false;
+  @ViewChild("editor", { static: true })
+  inputElement!: ElementRef;
 
-  private onChange: (value: string) => void = _ => {
+  private onChange: (value: string | null) => void = _ => {
   };
   private onTouched: () => void = () => {
   };
@@ -40,19 +40,45 @@ export class InputComponent implements ControlValueAccessor {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    if(this.inputElement) {
+      this.inputElement.nativeElement.disabled = isDisabled;
+    }
   }
 
   writeValue(value: string): void {
-    this.internalValue = value;
+    if(this.inputElement) {
+      this.inputElement.nativeElement.value = value;
+    }
   }
 
   blur(): void {
-    this.onTouched();
+    this.performOnTouched();
   }
 
   input(): void {
-    this.onChange(this.internalValue);
+    this.performOnChange(this.inputElement.nativeElement.value);
+    this.performOnTouched();
+  }
+
+  private performOnChange(value: string) {
+    this.onChange(value);
+    if(this.control.invalid) {
+      this.getInput().classList.add("ng-invalid");
+      this.getInput().classList.remove('ng-valid');
+    }
+    if(this.control.valid) {
+      this.getInput().classList.add("ng-valid");
+      this.getInput().classList.remove("ng-invalid");
+    }
+  }
+
+  private performOnTouched(): void {
+    this.getInput().classList.remove("ng-untouched");
+    this.getInput().classList.add("ng-touched");
     this.onTouched();
+  }
+
+  private getInput(): HTMLInputElement {
+    return this.inputElement.nativeElement as HTMLInputElement;
   }
 }
