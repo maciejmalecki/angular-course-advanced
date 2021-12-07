@@ -5,6 +5,7 @@
        class="form-control"
        [attr.name]="name ? name : inputId"
        [attr.id]="inputId"
+       autocomplete="off"
        (input)="input()"
        (blur)="blur()">
 <div class="invalid-feedback">
