@@ -11,14 +11,23 @@
     <div class="mb-3">
       <label for="title" class="form-label">Title *</label>
       <input type="text" id="title" name="title" class="form-control" formControlName="title">
+      <div class="invalid-feedback">
+        {{ dumpErrors(formGroup.controls.title.errors) }}
+      </div>
     </div>
     <div class="mb-3">
       <label for="author" class="form-label">Author *</label>
       <input type="text" id="author" name="author" class="form-control" formControlName="author">
+      <div class="invalid-feedback">
+        {{ dumpErrors(formGroup.controls.author.errors) }}
+      </div>
     </div>
     <div class="mb-3">
       <label for="description" class="form-label">Description</label>
       <textarea name="description" id="description" rows="6" class="form-control" formControlName="description"></textarea>
+      <div class="invalid-feedback">
+        {{ dumpErrors(formGroup.controls.description.errors) }}
+      </div>
     </div>
 
     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
