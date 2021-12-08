@@ -1,12 +1,11 @@
 <label [for]="inputId" class="form-label">{{ title }} <span *ngIf="mandatory">*</span></label>
 <input
+  #valueEditor
   type="text"
   [id]="inputId"
   [name]="name ? name : inputId"
   class="form-control"
-  [ngModel]="innerValue"
-  (ngModelChange)="performOnChanged($event)"
-  [disabled]="disabled"
+  (input)="performOnChanged()"
   (blur)="performOnTouched()"
 >
 <div class="invalid-feedback">

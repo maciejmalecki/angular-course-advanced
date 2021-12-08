@@ -1,5 +1,5 @@
-import {Component, Input, Optional, Self} from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from "@angular/forms";
+import {Component, ElementRef, Input, Optional, Self, ViewChild} from '@angular/core';
+import {ControlValueAccessor, NgControl} from "@angular/forms";
 
 @Component({
   selector: 'app-input',
@@ -7,8 +7,6 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from "@angular/forms
   styleUrls: ['./input.component.scss'],
 })
 export class InputComponent implements ControlValueAccessor {
-
-  innerValue = '';
 
   @Input()
   mandatory = false;
@@ -22,7 +20,8 @@ export class InputComponent implements ControlValueAccessor {
   @Input()
   name = '';
 
-  disabled = false;
+  @ViewChild("valueEditor", { static: true })
+  inputElement!: ElementRef;
 
   private onChangeFn: (value: string) => void = (_) => {};
   private onTouchedFn: () => void = () => {};
@@ -34,7 +33,7 @@ export class InputComponent implements ControlValueAccessor {
   }
 
   writeValue(value: string): void {
-    this.innerValue = value;
+    this.inputElement.nativeElement.value = value;
   }
 
   registerOnChange(fn: (value: string) => void): void {
@@ -46,15 +45,14 @@ export class InputComponent implements ControlValueAccessor {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    this.inputElement.nativeElement.disabled = isDisabled;
   }
 
   performOnTouched(): void {
     this.onTouchedFn();
   }
 
-  performOnChanged(value: string) {
-    this.innerValue = value;
-    this.onChangeFn(value);
+  performOnChanged() {
+    this.onChangeFn(this.inputElement.nativeElement.value);
   }
 }

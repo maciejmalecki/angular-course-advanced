@@ -16,8 +16,7 @@ import {FormsModule} from "@angular/forms";
     InputComponent
   ],
   imports: [
-    CommonModule,
-    FormsModule
+    CommonModule
   ]
 })
 export class SharedModule { }
