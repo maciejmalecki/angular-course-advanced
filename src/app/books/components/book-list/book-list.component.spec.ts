@@ -4,6 +4,8 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing"
 import {Book} from "../../model/book";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {BooksModule} from "../../books.module";
+import {SharedModule} from "../../../shared/shared.module";
+import {ErrorMsgPipe} from "../../../shared/pipes/error-msg.pipe";
 
 describe('BookListComponent', () => {
 
@@ -78,7 +80,7 @@ describe('BookListComponent', () => {
 
     beforeEach(async () => {
       await TestBed.configureTestingModule({
-        declarations: [BookListComponent],
+        declarations: [BookListComponent, ErrorMsgPipe],
         imports: [ReactiveFormsModule],
         providers: [BooksService]
       }).compileComponents();
