@@ -1,5 +1,7 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Book} from "../model/book";
+
+const copyBook = (book: Book) => ({...book});
 
 @Injectable()
 export class BooksService {
@@ -21,13 +23,15 @@ export class BooksService {
     description: 'By the year 1992, humanity has colonized the Moon and psychic powers are common. The protagonist, Joe Chip, is a debt-ridden technician working for Runciter Associates, a "prudence organization" employing "inertials"—people with the ability to negate the powers of telepaths and "precogs"—to enforce the privacy of clients. The company is run by Glen Runciter, assisted by his deceased wife Ella who is kept in a state of "half-life", a form of cryonic suspension that allows the deceased limited consciousness and ability to communicate. While consulting with Ella, Runciter discovers that her consciousness is being invaded by another half-lifer named Jory Miller.'
   }];
 
-  constructor() { }
+  constructor() {
+  }
 
   getBooks(): Book[] {
-    return this.books;
+    return this.books.map(copyBook);
   }
 
   saveBook(book: Book): void {
-    this.books = this.books.map(value => value.id === book.id ? book : value);
+    this.books = this.books.map(value => value.id === book.id ? copyBook(book) : value);
   }
+
 }

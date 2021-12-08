@@ -1,4 +1,4 @@
-import {Component, ElementRef, ViewChild} from '@angular/core';
+import {Component} from '@angular/core';
 import {Book} from "../../model/book";
 import {BooksService} from "../../services/books.service";
 
@@ -14,13 +14,6 @@ export class BookListComponent {
 
   selectedBook: Book | null = null;
 
-  @ViewChild("title", { static: false })
-  titleInputComponent!: ElementRef;
-  @ViewChild("author", { static: false })
-  authorInputComponent!: ElementRef;
-  @ViewChild("description", { static: false })
-  descriptionTextAreaComponent!: ElementRef;
-
   constructor(private readonly bookService: BooksService) {
     this.books = this.bookService.getBooks();
   }
@@ -29,19 +22,13 @@ export class BookListComponent {
     if (this.selectedBook === book) {
       this.selectedBook = null;
     } else {
-      this.selectedBook = book;
+      this.selectedBook = {...book};
     }
   }
 
   saveBook(): void {
     if(this.selectedBook) {
-      const updatedBook: Book = {
-        id: this.selectedBook.id,
-        title: this.titleInputComponent.nativeElement.value,
-        author: this.authorInputComponent.nativeElement.value,
-        description: this.descriptionTextAreaComponent.nativeElement.value
-      };
-      this.bookService.saveBook(updatedBook);
+      this.bookService.saveBook(this.selectedBook);
       this.selectedBook = null;
       this.books = this.bookService.getBooks();
     }
