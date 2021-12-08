@@ -57,8 +57,8 @@ describe('BookListComponent', () => {
     const bookList = () => nativeElement.querySelectorAll("li.list-group-item");
     const bookElementAt = (position: number) => bookList().item(position) as HTMLLIElement;
     const editor = () => nativeElement.querySelector("#editor");
-    const cancelButton = () => nativeElement.querySelector("button.btn.btn-light") as HTMLButtonElement;
-    const saveButton = () => nativeElement.querySelector("button.btn.btn-primary") as HTMLButtonElement;
+    const cancelButton = () => nativeElement.querySelector("#cancel-button") as HTMLButtonElement;
+    const saveButton = () => nativeElement.querySelector("#save-button") as HTMLButtonElement;
     const title = () => nativeElement.querySelector("input#title") as HTMLInputElement;
     const author = () => nativeElement.querySelector("input#author") as HTMLInputElement;
     const description = () => nativeElement.querySelector("textarea#description") as HTMLTextAreaElement;
@@ -157,6 +157,7 @@ describe('BookListComponent', () => {
       editField(title(), 'Foo');
       editField(author(), 'Bar');
       editField(description(), 'Some nonsense');
+      cd();
       clickSave();
       cd();
       // then

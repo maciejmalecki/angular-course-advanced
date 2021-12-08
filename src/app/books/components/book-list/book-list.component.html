@@ -9,11 +9,11 @@
   <form (ngSubmit)="saveBook()" [formGroup]="formGroup">
     <p class="lead">Edit selected book</p>
     <div class="mb-3">
-      <label for="title" class="form-label">Title</label>
+      <label for="title" class="form-label">Title *</label>
       <input type="text" id="title" name="title" class="form-control" formControlName="title">
     </div>
     <div class="mb-3">
-      <label for="author" class="form-label">Author</label>
+      <label for="author" class="form-label">Author *</label>
       <input type="text" id="author" name="author" class="form-control" formControlName="author">
     </div>
     <div class="mb-3">
@@ -22,8 +22,9 @@
     </div>
 
     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-      <button class="btn btn-light" (click)="cancelEditing()">Cancel</button>
-      <button type="submit" class="btn btn-primary">Save</button>
+      <button type="button" class="btn btn-light" (click)="disableEnable()">Disable/Enable</button>
+      <button type="button" class="btn btn-light" id="cancel-button" (click)="cancelEditing()">Cancel</button>
+      <button type="submit" class="btn btn-primary" id="save-button" [disabled]="formGroup.invalid || formGroup.pristine">Save</button>
     </div>
   </form>
 </div>
