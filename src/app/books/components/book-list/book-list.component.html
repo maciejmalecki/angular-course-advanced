@@ -9,8 +9,12 @@
   <form (ngSubmit)="saveBook()" [formGroup]="formGroup">
     <p class="lead">Edit selected book</p>
     <div class="mb-3">
-      <label for="title" class="form-label">Title *</label>
-      <input type="text" id="title" name="title" class="form-control" formControlName="title">
+      <app-input
+        inputId="title"
+        title="Title"
+        [mandatory]="true"
+        formControlName="title">
+      </app-input>
       <div class="invalid-feedback">
         {{ formGroup.controls.title.errors | errorMsg : 'title' }}
       </div>
