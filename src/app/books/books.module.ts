@@ -1,13 +1,14 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { BookListComponent } from './components/book-list/book-list.component';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {BookListComponent} from './components/book-list/book-list.component';
 import {BooksService} from "./services/books.service";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {ReactiveFormsModule} from "@angular/forms";
 import {SharedModule} from "../shared/shared.module";
 import {HttpClientModule} from "@angular/common/http";
 import {StoreModule} from "@ngrx/store";
 import {booksStateReducer} from "./store/books.reducer";
-
+import {EffectsModule} from "@ngrx/effects";
+import {BooksEffects} from "./store/books.effects";
 
 
 @NgModule({
@@ -22,10 +23,12 @@ import {booksStateReducer} from "./store/books.reducer";
     ReactiveFormsModule,
     SharedModule,
     HttpClientModule,
-    StoreModule.forFeature("books", booksStateReducer)
+    StoreModule.forFeature("books", booksStateReducer),
+    EffectsModule.forFeature([BooksEffects])
   ],
   providers: [
     BooksService
   ]
 })
-export class BooksModule { }
+export class BooksModule {
+}

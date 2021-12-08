@@ -1,13 +1,11 @@
 import {Component} from '@angular/core';
 import {Book} from "../../model/book";
-import {BooksService} from "../../services/books.service";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Observable} from "rxjs";
 import {select, Store} from "@ngrx/store";
 import {BooksState} from "../../store/books.reducer";
-import {deselectBookAction, selectBookAction, setBooksAction} from "../../store/book.actions";
+import {deselectBookAction, loadBooksAction, saveBookAction, selectBookAction} from "../../store/book.actions";
 import {BooksSelectors} from "../../store/books.selectors";
-import {switchMap} from "rxjs/operators";
 
 @Component({
   selector: 'app-book-list',
@@ -23,8 +21,8 @@ export class BookListComponent {
 
   readonly formGroup: FormGroup;
 
-  constructor(private readonly bookService: BooksService, private readonly store: Store<BooksState>) {
-    this.bookService.getBooks().subscribe(books => this.store.dispatch(setBooksAction({books})));
+  constructor(private readonly store: Store<BooksState>) {
+    this.store.dispatch(loadBooksAction());
     this.books$ = this.store.pipe(select(BooksSelectors.getBooks));
     this.selectedBook$ = this.store.pipe(select(BooksSelectors.getSelectedBook));
     this.selectedBook$.subscribe(book => {
@@ -61,11 +59,8 @@ export class BookListComponent {
 
   saveBook(): void {
     if (this.selectedBookId) {
-      this.bookService.saveBook({id: this.selectedBookId, ...this.formGroup.value})
-        .pipe(switchMap(_ => this.bookService.getBooks())).subscribe(books => {
-        this.store.dispatch(setBooksAction({books}));
-        this.store.dispatch(deselectBookAction())
-      });
+      this.store.dispatch(saveBookAction({book: {id: this.selectedBookId, ...this.formGroup.value}}));
+      this.store.dispatch(deselectBookAction());
     }
   }
 

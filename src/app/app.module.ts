@@ -7,6 +7,7 @@ import {BooksModule} from "./books/books.module";
 import {SharedModule} from "./shared/shared.module";
 import {CoreModule} from "./core/core.module";
 import {StoreModule} from "@ngrx/store";
+import {EffectsModule} from "@ngrx/effects";
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import {StoreModule} from "@ngrx/store";
     BooksModule,
     BrowserModule,
     AppRoutingModule,
-    StoreModule.forRoot({})
+    StoreModule.forRoot({}),
+    EffectsModule.forRoot([])
   ],
   providers: [],
   bootstrap: [AppComponent]
