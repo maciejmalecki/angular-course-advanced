@@ -1,5 +1,5 @@
 import { BookListComponent } from './book-list.component';
-import {BooksService} from "../../service/books.service";
+import {BooksService} from "../../services/books.service";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {Book} from "../../model/book";
 

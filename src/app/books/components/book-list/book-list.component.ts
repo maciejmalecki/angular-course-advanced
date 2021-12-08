@@ -1,6 +1,6 @@
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {Book} from "../../model/book";
-import {BooksService} from "../../service/books.service";
+import {BooksService} from "../../services/books.service";
 
 @Component({
   selector: 'app-book-list',

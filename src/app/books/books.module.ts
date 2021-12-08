@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BookListComponent } from './component/book-list/book-list.component';
-import {BooksService} from "./service/books.service";
+import { BookListComponent } from './components/book-list/book-list.component';
+import {BooksService} from "./services/books.service";
 
 
 
