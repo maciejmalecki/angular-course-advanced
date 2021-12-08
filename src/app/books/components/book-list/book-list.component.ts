@@ -3,6 +3,11 @@ import {Book} from "../../model/book";
 import {BooksService} from "../../services/books.service";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Observable} from "rxjs";
+import {select, Store} from "@ngrx/store";
+import {BooksState} from "../../store/books.reducer";
+import {deselectBookAction, selectBookAction, setBooksAction} from "../../store/book.actions";
+import {BooksSelectors} from "../../store/books.selectors";
+import {switchMap} from "rxjs/operators";
 
 @Component({
   selector: 'app-book-list',
@@ -13,49 +18,64 @@ import {Observable} from "rxjs";
 export class BookListComponent {
 
   books$: Observable<Book[]>;
-  selectedBook: Book | null = null;
+  selectedBook$: Observable<Book | null>;
+  selectedBookId: number | undefined = undefined;
 
   readonly formGroup: FormGroup;
 
-  constructor(private readonly bookService: BooksService) {
-    this.books$ = this.bookService.getBooks();
+  constructor(private readonly bookService: BooksService, private readonly store: Store<BooksState>) {
+    this.bookService.getBooks().subscribe(books => this.store.dispatch(setBooksAction({books})));
+    this.books$ = this.store.pipe(select(BooksSelectors.getBooks));
+    this.selectedBook$ = this.store.pipe(select(BooksSelectors.getSelectedBook));
+    this.selectedBook$.subscribe(book => {
+      if (book) {
+        this.selectedBookId = book.id;
+        this.formGroup.enable();
+        this.formGroup.reset({
+          author: book.author,
+          title: book.title,
+          description: book.description
+        });
+      } else {
+        this.selectedBookId = undefined;
+      }
+    });
+
     this.formGroup = new FormGroup({
       title: new FormControl('', [Validators.required, Validators.maxLength(30)]),
-      author: new FormControl({ value: '', disabled: false }, [Validators.required, Validators.minLength(2), Validators.maxLength(20)]),
+      author: new FormControl({
+        value: '',
+        disabled: false
+      }, [Validators.required, Validators.minLength(2), Validators.maxLength(20)]),
       description: new FormControl('', [Validators.maxLength(1000)])
     });
   }
 
   selectBook(book: Book): void {
-    if (this.selectedBook?.id === book.id) {
-      this.selectedBook = null;
+    if (this.selectedBookId) {
+      this.store.dispatch(deselectBookAction());
     } else {
-      this.selectedBook = book;
-      this.formGroup.enable();
-      this.formGroup.reset({
-        author: this.selectedBook.author,
-        title: this.selectedBook.title,
-        description: this.selectedBook.description
-      });
+      this.store.dispatch(selectBookAction({book}));
     }
   }
 
   saveBook(): void {
-    if(this.selectedBook) {
-      this.bookService.saveBook({ ...this.selectedBook, ...this.formGroup.value }).subscribe(_ => {
-        this.selectedBook = null;
-        this.books$ = this.bookService.getBooks();
+    if (this.selectedBookId) {
+      this.bookService.saveBook({id: this.selectedBookId, ...this.formGroup.value})
+        .pipe(switchMap(_ => this.bookService.getBooks())).subscribe(books => {
+        this.store.dispatch(setBooksAction({books}));
+        this.store.dispatch(deselectBookAction())
       });
     }
   }
 
   cancelEditing(): void {
-    this.selectedBook = null;
+    this.store.dispatch(deselectBookAction());
   }
 
   disableEnable(): void {
     const fc = this.formGroup;
-    if(fc.disabled) {
+    if (fc.disabled) {
       fc.enable();
     } else {
       fc.disable();

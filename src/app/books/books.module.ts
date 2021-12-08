@@ -5,6 +5,8 @@ import {BooksService} from "./services/books.service";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {SharedModule} from "../shared/shared.module";
 import {HttpClientModule} from "@angular/common/http";
+import {StoreModule} from "@ngrx/store";
+import {booksStateReducer} from "./store/books.reducer";
 
 
 
@@ -19,7 +21,8 @@ import {HttpClientModule} from "@angular/common/http";
     CommonModule,
     ReactiveFormsModule,
     SharedModule,
-    HttpClientModule
+    HttpClientModule,
+    StoreModule.forFeature("books", booksStateReducer)
   ],
   providers: [
     BooksService

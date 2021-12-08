@@ -1,11 +1,11 @@
 <ul class="list-group">
-  <li [ngClass]="{ selected: book.id === selectedBook?.id}" class="list-group-item" *ngFor="let book of books$ | async"
+  <li [ngClass]="{ selected: book.id === (selectedBook$ | async)?.id}" class="list-group-item" *ngFor="let book of books$ | async"
       (click)="selectBook(book)">
     {{ book.title }}, <em>{{ book.author }}</em>
   </li>
 </ul>
 
-<div *ngIf="selectedBook" id="editor">
+<div *ngIf="selectedBook$ | async" id="editor">
   <form (ngSubmit)="saveBook()" [formGroup]="formGroup">
     <p class="lead">Edit selected book</p>
     <div class="mb-3">
