@@ -15,16 +15,14 @@
         [mandatory]="true"
         formControlName="title">
       </app-input>
-      <div class="invalid-feedback">
-        {{ formGroup.controls.title.errors | errorMsg : 'title' }}
-      </div>
     </div>
     <div class="mb-3">
-      <label for="author" class="form-label">Author *</label>
-      <input type="text" id="author" name="author" class="form-control" formControlName="author">
-      <div class="invalid-feedback">
-        {{ formGroup.controls.author.errors | errorMsg : 'author' }}
-      </div>
+      <app-input
+        inputId="author"
+        title="Author"
+        [mandatory]="true"
+        formControlName="author">
+      </app-input>
     </div>
     <div class="mb-3">
       <label for="description" class="form-label">Description</label>

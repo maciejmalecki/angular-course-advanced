@@ -9,3 +9,7 @@
   [disabled]="disabled"
   (blur)="performOnTouched()"
 >
+<div class="invalid-feedback">
+  {{ control?.errors | errorMsg : (title | lowercase) }}
+</div>
+

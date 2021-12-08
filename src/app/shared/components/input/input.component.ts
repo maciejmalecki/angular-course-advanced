@@ -1,17 +1,10 @@
-import {Component, Input} from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
+import {Component, Input, Optional, Self} from '@angular/core';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from "@angular/forms";
 
 @Component({
   selector: 'app-input',
   templateUrl: './input.component.html',
   styleUrls: ['./input.component.scss'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: InputComponent,
-      multi: true
-    }
-  ]
 })
 export class InputComponent implements ControlValueAccessor {
 
@@ -34,7 +27,11 @@ export class InputComponent implements ControlValueAccessor {
   private onChangeFn: (value: string) => void = (_) => {};
   private onTouchedFn: () => void = () => {};
 
-  constructor() { }
+  constructor(@Optional() @Self() public control: NgControl) {
+    if(this.control) {
+      this.control.valueAccessor = this;
+    }
+  }
 
   writeValue(value: string): void {
     this.innerValue = value;

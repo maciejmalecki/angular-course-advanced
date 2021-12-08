@@ -80,8 +80,8 @@ describe('BookListComponent', () => {
 
     beforeEach(async () => {
       await TestBed.configureTestingModule({
-        declarations: [BookListComponent, ErrorMsgPipe],
-        imports: [ReactiveFormsModule],
+        declarations: [BookListComponent],
+        imports: [ReactiveFormsModule, SharedModule],
         providers: [BooksService]
       }).compileComponents();
     });
