@@ -19,7 +19,7 @@ export class BookListComponent {
   }
 
   selectBook(book: Book): void {
-    if (this.selectedBook === book) {
+    if (this.selectedBook?.id === book.id) {
       this.selectedBook = null;
     } else {
       this.selectedBook = {...book};
