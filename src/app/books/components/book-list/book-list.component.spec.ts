@@ -2,7 +2,8 @@ import { BookListComponent } from './book-list.component';
 import {BooksService} from "../../services/books.service";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {Book} from "../../model/book";
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {BooksModule} from "../../books.module";
 
 describe('BookListComponent', () => {
 
@@ -78,7 +79,7 @@ describe('BookListComponent', () => {
     beforeEach(async () => {
       await TestBed.configureTestingModule({
         declarations: [BookListComponent],
-        imports: [FormsModule],
+        imports: [ReactiveFormsModule],
         providers: [BooksService]
       }).compileComponents();
     });
@@ -101,13 +102,13 @@ describe('BookListComponent', () => {
       expect(liElements.length).toBe(3);
     });
 
-    it('selects book on clicking', fakeAsync(() => {
+    it('selects book on clicking', () => {
       // given
       expect(component.selectedBook).toBeNull();
       expect(editor()).toBeFalsy();
       // when
       clickBookAt(1);
-      cdt();
+      cd();
       // then
       expect(editor()).toBeTruthy();
       const toBeSelected = component.books[1];
@@ -116,7 +117,7 @@ describe('BookListComponent', () => {
       expect(author().value).toBe(toBeSelected.author);
       expect(description().value).toBe(toBeSelected.description);
       expect(bookElementAt(1).classList.contains("selected")).toBeTruthy();
-    }));
+    });
 
     it('closes editor after clicking on selected book', () => {
       // given
@@ -146,18 +147,18 @@ describe('BookListComponent', () => {
       expect(component.selectedBook).toBeNull();
     });
 
-    it('saves modified book to the books service', fakeAsync(() => {
+    it('saves modified book to the books service', () => {
       // given
       spyOn(booksService, 'saveBook').and.callThrough();
       clickBookAt(1);
-      cdt();
+      cd();
       expect(editor()).toBeTruthy();
       // when
       editField(title(), 'Foo');
       editField(author(), 'Bar');
       editField(description(), 'Some nonsense');
       clickSave();
-      cdt();
+      cd();
       // then
       expect(editor()).toBeFalsy();
       expect(booksService.saveBook).toHaveBeenCalledOnceWith({
@@ -166,7 +167,7 @@ describe('BookListComponent', () => {
         author: "Bar",
         description: "Some nonsense"
       });
-    }));
+    });
 
   });
 });
