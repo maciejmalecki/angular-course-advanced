@@ -42,7 +42,12 @@ export class BookDetailsComponent implements OnInit, OnDestroy, OnChanges {
     this.formGroup = new FormGroup({
       title: new FormControl('', [Validators.required, Validators.maxLength(30)]),
       author: new FormControl({ value: '', disabled: false }, [Validators.required, Validators.minLength(2), Validators.maxLength(20)]),
-      description: new FormControl('', [Validators.maxLength(1000)])
+      description: new FormControl('', [Validators.maxLength(1000)]),
+      edition: new FormGroup({
+        publisher: new FormControl('', []),
+        publishYear: new FormControl('', [Validators.max(3000), Validators.min(1900)]),
+        editionNumber: new FormControl('', [Validators.max(100), Validators.min(1)])
+      })
     });
   }
 
@@ -61,13 +66,25 @@ export class BookDetailsComponent implements OnInit, OnDestroy, OnChanges {
       this.formGroup.patchValue({
         title: this.book.title,
         author: this.book.author,
-        description: this.book.description
+        description: this.book.description,
+        edition: {
+          publisher: this.book.edition.publisher,
+          publishYear: this.book.edition.publishYear,
+          editionNumber: this.book.edition.editionNumber
+        }
       });
     }
   }
 
   saveBook(): void {
-    this.bookSaved.emit({ ...this.book, ...this.formGroup.value });
+    const rawEdition = this.formGroup.value.edition;
+    const edition = {
+      ...rawEdition,
+      publishYear: Number.parseInt(rawEdition.publishYear, 10),
+      editionNumber: Number.parseInt(rawEdition.editionNumber, 10)
+    };
+
+    this.bookSaved.emit({ ...this.book, ...{ ...this.formGroup.value, edition } });
   }
 
   disableEnable(): void {

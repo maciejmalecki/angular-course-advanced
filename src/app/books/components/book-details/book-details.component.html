@@ -24,6 +24,32 @@
     </div>
   </div>
 
+  <ng-container formGroupName="edition">
+  <div class="mb-3">
+    <app-input
+      inputId="publisher"
+      title="Publisher"
+      formControlName="publisher">
+    </app-input>
+  </div>
+  <div class="mb-3">
+    <app-input
+      inputId="publishYear"
+      title="Publish year"
+      [mandatory]="true"
+      formControlName="publishYear">
+    </app-input>
+  </div>
+  <div class="mb-3">
+    <app-input
+      inputId="editionNumber"
+      title="Edition"
+      [mandatory]="true"
+      formControlName="editionNumber">
+    </app-input>
+  </div>
+  </ng-container>
+
   <div class="d-grid gap-2 d-md-flex justify-content-md-end">
     <button type="button" class="btn btn-light" (click)="disableEnable()">Disable/Enable</button>
     <button type="button" class="btn btn-light" id="cancel-button" (click)="cancelEditing()">Cancel</button>
