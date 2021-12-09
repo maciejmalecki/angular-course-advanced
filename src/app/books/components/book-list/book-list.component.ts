@@ -1,8 +1,9 @@
-import {Component} from '@angular/core';
+import {Component, OnDestroy} from '@angular/core';
 import {Book} from "../../model/book";
 import {BooksService} from "../../services/books.service";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
+import {takeUntil} from "rxjs/operators";
 
 @Component({
   selector: 'app-book-list',
@@ -10,12 +11,13 @@ import {Observable} from "rxjs";
   styleUrls: ['./book-list.component.scss'],
   providers: []
 })
-export class BookListComponent {
+export class BookListComponent implements OnDestroy{
 
   books$: Observable<Book[]>;
   selectedBook: Book | null = null;
 
   readonly formGroup: FormGroup;
+  private readonly unsubscribe = new Subject();
 
   constructor(private readonly bookService: BooksService) {
     this.books$ = this.bookService.getBooks();
@@ -24,6 +26,11 @@ export class BookListComponent {
       author: new FormControl({ value: '', disabled: false }, [Validators.required, Validators.minLength(2), Validators.maxLength(20)]),
       description: new FormControl('', [Validators.maxLength(1000)])
     });
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
   }
 
   selectBook(book: Book): void {
@@ -42,9 +49,12 @@ export class BookListComponent {
 
   saveBook(): void {
     if(this.selectedBook) {
-      this.bookService.saveBook({ ...this.selectedBook, ...this.formGroup.value });
-      this.selectedBook = null;
-      this.books = this.bookService.getBooks();
+      this.bookService.saveBook({ ...this.selectedBook, ...this.formGroup.value })
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(_ => {
+        this.selectedBook = null;
+        this.books$ = this.bookService.getBooks();
+      });
     }
   }
 

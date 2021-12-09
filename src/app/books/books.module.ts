@@ -4,6 +4,7 @@ import { BookListComponent } from './components/book-list/book-list.component';
 import {BooksService} from "./services/books.service";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {SharedModule} from "../shared/shared.module";
+import {HttpClientModule} from "@angular/common/http";
 
 
 
@@ -17,7 +18,8 @@ import {SharedModule} from "../shared/shared.module";
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    SharedModule
+    SharedModule,
+    HttpClientModule
   ],
   providers: [
     BooksService
