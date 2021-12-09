@@ -1,7 +1,6 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {RouterModule, Routes} from '@angular/router';
 import {DashboardComponent} from "./core/components/dashboard/dashboard.component";
-import {BookListComponent} from "./books/components/book-list/book-list.component";
 import {PageNotFoundComponent} from "./core/components/page-not-found/page-not-found.component";
 
 const routes: Routes = [
@@ -11,7 +10,7 @@ const routes: Routes = [
   },
   {
     path: 'books',
-    component: BookListComponent
+    loadChildren: () => import('./books/books.module').then(m => m.BooksModule)
   },
   {
     path: '**',
@@ -23,4 +22,5 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {
+}
