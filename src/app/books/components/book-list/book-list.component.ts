@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {Book} from "../../model/book";
 import {BooksService} from "../../services/books.service";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-book-list',
@@ -11,13 +12,13 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 })
 export class BookListComponent {
 
-  books: Book[];
+  books$: Observable<Book[]>;
   selectedBook: Book | null = null;
 
   readonly formGroup: FormGroup;
 
   constructor(private readonly bookService: BooksService) {
-    this.books = this.bookService.getBooks();
+    this.books$ = this.bookService.getBooks();
     this.formGroup = new FormGroup({
       title: new FormControl('', [Validators.required, Validators.maxLength(30)]),
       author: new FormControl({ value: '', disabled: false }, [Validators.required, Validators.minLength(2), Validators.maxLength(20)]),
