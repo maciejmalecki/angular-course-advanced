@@ -7,36 +7,10 @@
 </ul>
 
 <div *ngIf="selectedBook" id="editor">
-  <form (ngSubmit)="saveBook()" [formGroup]="formGroup">
-    <p class="lead">Edit selected book</p>
-    <div class="mb-3">
-      <app-input
-        inputId="title"
-        title="Title"
-        [mandatory]="true"
-        formControlName="title">
-      </app-input>
-    </div>
-    <div class="mb-3">
-      <app-input
-        inputId="author"
-        title="Author"
-        [mandatory]="true"
-        formControlName="author">
-      </app-input>
-    </div>
-    <div class="mb-3">
-      <label for="description" class="form-label">Description</label>
-      <textarea name="description" id="description" rows="6" class="form-control" formControlName="description"></textarea>
-      <div class="invalid-feedback">
-        {{ formGroup.controls.description.errors | errorMsg : 'description' }}
-      </div>
-    </div>
-
-    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-      <button type="button" class="btn btn-light" (click)="disableEnable()">Disable/Enable</button>
-      <button type="button" class="btn btn-light" id="cancel-button" (click)="cancelEditing()">Cancel</button>
-      <button type="submit" class="btn btn-primary" id="save-button" [disabled]="formGroup.invalid || formGroup.pristine">Save</button>
-    </div>
-  </form>
+  <app-book-details
+    [book]="selectedBook"
+    (bookSaved)="saveBook($event)"
+    (editingCancelled)="cancelEditing()"
+  >
+  </app-book-details>
 </div>

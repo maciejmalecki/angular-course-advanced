@@ -16,16 +16,10 @@ export class BookListComponent implements OnDestroy{
   books$: Observable<Book[]>;
   selectedBook: Book | null = null;
 
-  readonly formGroup: FormGroup;
   private readonly unsubscribe = new Subject();
 
   constructor(private readonly bookService: BooksService) {
     this.books$ = this.bookService.getBooks();
-    this.formGroup = new FormGroup({
-      title: new FormControl('', [Validators.required, Validators.maxLength(30)]),
-      author: new FormControl({ value: '', disabled: false }, [Validators.required, Validators.minLength(2), Validators.maxLength(20)]),
-      description: new FormControl('', [Validators.maxLength(1000)])
-    });
   }
 
   ngOnDestroy(): void {
@@ -38,23 +32,6 @@ export class BookListComponent implements OnDestroy{
       this.selectedBook = null;
     } else {
       this.selectedBook = book;
-      this.formGroup.enable();
-      this.formGroup.reset({
-        author: this.selectedBook.author,
-        title: this.selectedBook.title,
-        description: this.selectedBook.description
-      });
-    }
-  }
-
-  saveBook(): void {
-    if(this.selectedBook) {
-      this.bookService.saveBook({ ...this.selectedBook, ...this.formGroup.value })
-        .pipe(takeUntil(this.unsubscribe))
-        .subscribe(_ => {
-        this.selectedBook = null;
-        this.books$ = this.bookService.getBooks();
-      });
     }
   }
 
@@ -62,12 +39,10 @@ export class BookListComponent implements OnDestroy{
     this.selectedBook = null;
   }
 
-  disableEnable(): void {
-    const fc = this.formGroup;
-    if(fc.disabled) {
-      fc.enable();
-    } else {
-      fc.disable();
-    }
+  saveBook(book: Book) {
+    this.bookService.saveBook(book).pipe(takeUntil(this.unsubscribe)).subscribe(_ => {
+      this.selectedBook = null;
+      this.books$ = this.bookService.getBooks();
+    });
   }
 }
