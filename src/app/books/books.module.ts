@@ -10,6 +10,7 @@ import {EditionDetailsComponent} from './components/book-details/edition-details
 import {StoreModule} from "@ngrx/store";
 import {BOOKS_FEATURE, booksStateReducer} from "./store/books.reducer";
 import {BooksRoutingModule} from "./books-routing.module";
+import {AppLibModule} from "../../../projects/app-lib/src/lib/app-lib.module";
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import {BooksRoutingModule} from "./books-routing.module";
     ReactiveFormsModule,
     SharedModule,
     HttpClientModule,
+    AppLibModule,
     StoreModule.forFeature(BOOKS_FEATURE, booksStateReducer),
     BooksRoutingModule
   ],

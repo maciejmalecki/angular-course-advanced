@@ -6,6 +6,7 @@ import {AppComponent} from './app.component';
 import {SharedModule} from "./shared/shared.module";
 import {CoreModule} from "./core/core.module";
 import {StoreModule} from "@ngrx/store";
+import {AppLibModule} from "../../projects/app-lib/src/lib/app-lib.module";
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import {StoreModule} from "@ngrx/store";
     CoreModule,
     BrowserModule,
     AppRoutingModule,
+    AppLibModule,
     StoreModule.forRoot({})
   ],
   bootstrap: [AppComponent]
