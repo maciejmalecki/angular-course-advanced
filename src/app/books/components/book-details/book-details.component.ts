@@ -47,9 +47,12 @@ export class BookDetailsComponent implements OnInit, OnDestroy, OnChanges {
   @Output()
   editingCancelled = new EventEmitter();
 
+  _editionDetailsComponent!: EditionDetailsComponent;
+
   @ViewChild(EditionDetailsComponent, { static: true })
   set editionDetailsComponent(component: EditionDetailsComponent) {
-    this.formGroup.addControl('edition', component.formGroup);
+    this._editionDetailsComponent = component;
+    this.formGroup.addControl('edition', component.form.formGroup);
   }
 
   readonly formGroup: FormGroup;
@@ -94,12 +97,7 @@ export class BookDetailsComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   saveBook(): void {
-      const rawEdition = this.formGroup.value.edition;
-      const edition = {
-        ...rawEdition,
-        publishYear: Number.parseInt(rawEdition.publishYear, 10),
-        editionNumber: Number.parseInt(rawEdition.editionNumber, 10)
-      };
+      const edition = this._editionDetailsComponent.form.extract();
       this.book = {...this.book, ...{...this.formGroup.value, edition}};
       this.bookSaved.emit(this.book);
   }
