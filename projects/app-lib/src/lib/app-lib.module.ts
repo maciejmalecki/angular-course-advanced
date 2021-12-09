@@ -22,3 +22,9 @@ import {CommonModule} from "@angular/common";
   ]
 })
 export class AppLibModule { }
+
+export {
+  InputComponent,
+  AppLibComponent,
+  ErrorMsgPipe
+}
