@@ -1,7 +1,6 @@
 import {Component, OnDestroy} from '@angular/core';
 import {Book} from "../../model/book";
 import {BooksService} from "../../services/books.service";
-import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Observable, Subject} from "rxjs";
 import {takeUntil} from "rxjs/operators";
 

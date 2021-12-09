@@ -1,6 +1,5 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {takeUntil} from "rxjs/operators";
 import {Book} from "../../model/book";
 
 @Component({
@@ -8,10 +7,28 @@ import {Book} from "../../model/book";
   templateUrl: './book-details.component.html',
   styleUrls: ['./book-details.component.scss']
 })
-export class BookDetailsComponent implements OnInit {
+export class BookDetailsComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input()
   book!: Book;
+
+  // alternative method of hijacking input update
+  // _book!: Book;
+  //
+  // @Input()
+  // set book(value: Book) {
+  //   this._book = value;
+  //   this.formGroup.enable();
+  //   this.formGroup.patchValue({
+  //     title: this.book.title,
+  //     author: this.book.author,
+  //     description: this.book.description
+  //   });
+  // }
+  //
+  // get book() {
+  //   return this._book;
+  // }
 
   @Output()
   bookSaved = new EventEmitter<Book>();
@@ -19,17 +36,34 @@ export class BookDetailsComponent implements OnInit {
   @Output()
   editingCancelled = new EventEmitter();
 
-  formGroup!: FormGroup;
+  readonly formGroup: FormGroup;
 
   constructor() {
+    this.formGroup = new FormGroup({
+      title: new FormControl('', [Validators.required, Validators.maxLength(30)]),
+      author: new FormControl({ value: '', disabled: false }, [Validators.required, Validators.minLength(2), Validators.maxLength(20)]),
+      description: new FormControl('', [Validators.maxLength(1000)])
+    });
   }
 
   ngOnInit(): void {
-    this.formGroup = new FormGroup({
-      title: new FormControl(this.book.title, [Validators.required, Validators.maxLength(30)]),
-      author: new FormControl({ value: this.book.author, disabled: false }, [Validators.required, Validators.minLength(2), Validators.maxLength(20)]),
-      description: new FormControl(this.book.description, [Validators.maxLength(1000)])
-    });
+    console.log('ngOnInit');
+  }
+
+  ngOnDestroy(): void {
+    console.log('ngOnDestroy');
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    console.log(changes);
+    if(changes.book) {
+      this.formGroup.enable();
+      this.formGroup.patchValue({
+        title: this.book.title,
+        author: this.book.author,
+        description: this.book.description
+      });
+    }
   }
 
   saveBook(): void {
