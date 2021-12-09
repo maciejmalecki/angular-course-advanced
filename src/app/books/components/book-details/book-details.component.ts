@@ -1,6 +1,17 @@
-import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Book} from "../../model/book";
+import {EditionDetailsComponent} from "./edition-details/edition-details.component";
 
 @Component({
   selector: 'app-book-details',
@@ -36,20 +47,18 @@ export class BookDetailsComponent implements OnInit, OnDestroy, OnChanges {
   @Output()
   editingCancelled = new EventEmitter();
 
+  @ViewChild(EditionDetailsComponent, { static: true })
+  set editionDetailsComponent(component: EditionDetailsComponent) {
+    this.formGroup.addControl('edition', component.formGroup);
+  }
+
   readonly formGroup: FormGroup;
-  readonly editionFormGroup: FormGroup;
 
   constructor() {
-    this.editionFormGroup = new FormGroup({
-      publisher: new FormControl('', []),
-      publishYear: new FormControl('', [Validators.max(3000), Validators.min(1900)]),
-      editionNumber: new FormControl('', [Validators.max(100), Validators.min(1)])
-    });
     this.formGroup = new FormGroup({
       title: new FormControl('', [Validators.required, Validators.maxLength(30)]),
       author: new FormControl({ value: '', disabled: false }, [Validators.required, Validators.minLength(2), Validators.maxLength(20)]),
       description: new FormControl('', [Validators.maxLength(1000)]),
-      edition: this.editionFormGroup
     });
   }
 
@@ -63,6 +72,12 @@ export class BookDetailsComponent implements OnInit, OnDestroy, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     console.log(changes);
+
+    // alternative
+    // if(!this.formGroup.contains('edition')) {
+    //   this.formGroup.addControl('edition', this.editionDetailsComponent.formGroup);
+    // }
+
     if(changes.book) {
       this.formGroup.enable();
       this.formGroup.patchValue({

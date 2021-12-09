@@ -1,5 +1,5 @@
-import {Component, Input} from '@angular/core';
-import {FormGroup} from "@angular/forms";
+import {Component} from '@angular/core';
+import {FormControl, FormGroup, Validators} from "@angular/forms";
 
 @Component({
   selector: 'app-edition-details',
@@ -8,8 +8,13 @@ import {FormGroup} from "@angular/forms";
 })
 export class EditionDetailsComponent {
 
-  @Input()
-  formGroup!: FormGroup;
+  readonly formGroup: FormGroup;
 
-  constructor() { }
+  constructor() {
+    this.formGroup = new FormGroup({
+      publisher: new FormControl('', []),
+      publishYear: new FormControl('', [Validators.max(3000), Validators.min(1900)]),
+      editionNumber: new FormControl('', [Validators.max(100), Validators.min(1)])
+    });
+  }
 }
