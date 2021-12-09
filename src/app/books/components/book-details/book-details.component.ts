@@ -21,7 +21,7 @@ import {EditionDetailsComponent} from "./edition-details/edition-details.compone
 export class BookDetailsComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input()
-  book!: Book;
+  book!: Book | null;
 
   // alternative method of hijacking input update
   // _book!: Book;
@@ -81,7 +81,7 @@ export class BookDetailsComponent implements OnInit, OnDestroy, OnChanges {
     //   this.formGroup.addControl('edition', this.editionDetailsComponent.formGroup);
     // }
 
-    if(changes.book) {
+    if(changes.book && this.book) {
       this.formGroup.enable();
       this.formGroup.patchValue({
         title: this.book.title,
@@ -99,7 +99,9 @@ export class BookDetailsComponent implements OnInit, OnDestroy, OnChanges {
   saveBook(): void {
       const edition = this._editionDetailsComponent.form.extract();
       this.book = {...this.book, ...{...this.formGroup.value, edition}};
-      this.bookSaved.emit(this.book);
+      if(this.book) {
+        this.bookSaved.emit(this.book);
+      }
   }
 
   disableEnable(): void {
