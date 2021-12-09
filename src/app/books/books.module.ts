@@ -6,13 +6,15 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {SharedModule} from "../shared/shared.module";
 import {HttpClientModule} from "@angular/common/http";
 import { BookDetailsComponent } from './components/book-details/book-details.component';
+import { EditionDetailsComponent } from './components/book-details/edition-details/edition-details.component';
 
 
 
 @NgModule({
   declarations: [
     BookListComponent,
-    BookDetailsComponent
+    BookDetailsComponent,
+    EditionDetailsComponent
   ],
   exports: [
     BookListComponent,
