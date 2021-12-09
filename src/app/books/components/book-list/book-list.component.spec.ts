@@ -1,36 +1,53 @@
-import { BookListComponent } from './book-list.component';
+import {BookListComponent} from './book-list.component';
 import {BooksService} from "../../services/books.service";
-import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
-import {Book} from "../../model/book";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {BooksModule} from "../../books.module";
+import {ComponentFixture, TestBed, tick} from "@angular/core/testing";
+import {ReactiveFormsModule} from "@angular/forms";
 import {SharedModule} from "../../../shared/shared.module";
-import {ErrorMsgPipe} from "../../../shared/pipes/error-msg.pipe";
+import {of} from "rxjs";
+import {Book} from "../../model/book";
 
 describe('BookListComponent', () => {
 
   let component: BookListComponent;
+  let bookServiceMock: any;
+
+  const books = () => [{
+    id: 1,
+    title: 'Solaris',
+    author: 'Stanisław Lem',
+    description: 'Solaris chronicles the ultimate futility of attempted communications with the extraterrestrial life inhabiting a distant alien planet named Solaris. The planet is almost completely covered with an ocean of gel that is revealed to be a single, planet-encompassing entity. Terran scientists conjecture it is a living and a sentient being, and attempt to communicate with it.'
+  }, {
+    id: 2,
+    title: '2001: A Space Odyssey',
+    author: 'Aurthur C. Clarke',
+    description: 'A mysterious alien civilization uses a tool with the appearance of a large crystalline monolith to investigate worlds across the galaxy and, if possible, to encourage the development of intelligent life. The book shows one such monolith appearing in prehistoric Africa, 3 million years ago (in the movie, 4 mya), where it inspires a starving group of hominids to develop tools. The hominids use their tools to kill animals and eat meat, ending their starvation. They then use the tools to kill a leopard preying on them; the next day, the main ape character, Moon-Watcher, uses a club to kill the leader of a rival tribe. The book suggests that the monolith was instrumental in awakening intelligence.'
+  }, {
+    id: 3,
+    title: 'Ubik',
+    author: 'Phillip K. Dick',
+    description: 'By the year 1992, humanity has colonized the Moon and psychic powers are common. The protagonist, Joe Chip, is a debt-ridden technician working for Runciter Associates, a "prudence organization" employing "inertials"—people with the ability to negate the powers of telepaths and "precogs"—to enforce the privacy of clients. The company is run by Glen Runciter, assisted by his deceased wife Ella who is kept in a state of "half-life", a form of cryonic suspension that allows the deceased limited consciousness and ability to communicate. While consulting with Ella, Runciter discovers that her consciousness is being invaded by another half-lifer named Jory Miller.'
+  }];
+
+  beforeEach(() => {
+    bookServiceMock = {
+      getBooks: () => of(books()),
+      saveBook: (book: Book) => of(book)
+    };
+  });
 
   describe('[class]', () => {
 
-    let bookService: BooksService;
-
     beforeEach(() => {
-      bookService = new BooksService();
-      component = new BookListComponent(bookService);
+      component = new BookListComponent(bookServiceMock);
     });
 
     it('has no selected book initially', () => {
       expect(component.selectedBook).toBeNull();
     });
 
-    it('has some books initially', () => {
-      expect(component.books).toHaveSize(3);
-    });
-
     it('allows to select a book', () => {
       // given
-      const toBeSelected = component.books[1];
+      const toBeSelected = books()[1];
       // when
       component.selectBook(toBeSelected);
       // then
@@ -39,7 +56,7 @@ describe('BookListComponent', () => {
 
     it('allows to cancel the editing', () => {
       // given
-      const toBeSelected = component.books[1];
+      const toBeSelected = books()[1];
       component.selectBook(toBeSelected);
       expect(component.selectedBook).toEqual(toBeSelected);
       // when
@@ -82,7 +99,7 @@ describe('BookListComponent', () => {
       await TestBed.configureTestingModule({
         declarations: [BookListComponent],
         imports: [ReactiveFormsModule, SharedModule],
-        providers: [BooksService]
+        providers: [{ provide: BooksService, useValue: bookServiceMock }]
       }).compileComponents();
     });
 
@@ -113,7 +130,7 @@ describe('BookListComponent', () => {
       cd();
       // then
       expect(editor()).toBeTruthy();
-      const toBeSelected = component.books[1];
+      const toBeSelected = books()[1];
       expect(component.selectedBook).toEqual(toBeSelected);
       expect(title().value).toBe(toBeSelected.title);
       expect(author().value).toBe(toBeSelected.author);
