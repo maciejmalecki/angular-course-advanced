@@ -10,6 +10,8 @@ import { EditionDetailsComponent } from './components/book-details/edition-detai
 import {StoreModule} from "@ngrx/store";
 import {BOOKS_FEATURE, booksStateReducer} from "./store/books.reducer";
 import {BooksRoutingModule} from "./books-routing.module";
+import {EffectsModule} from "@ngrx/effects";
+import {BooksEffects} from "./store/books.effects";
 
 
 
@@ -29,7 +31,8 @@ import {BooksRoutingModule} from "./books-routing.module";
     SharedModule,
     HttpClientModule,
     BooksRoutingModule,
-    StoreModule.forFeature(BOOKS_FEATURE, booksStateReducer)
+    StoreModule.forFeature(BOOKS_FEATURE, booksStateReducer),
+    EffectsModule.forFeature([BooksEffects])
   ],
   providers: [
     BooksService
