@@ -1,11 +1,15 @@
 import {Component, OnDestroy} from '@angular/core';
 import {Book} from "../../model/book";
-import {BooksService} from "../../services/books.service";
 import {Observable, Subject} from "rxjs";
 import {takeUntil} from "rxjs/operators";
 import {select, Store} from "@ngrx/store";
 import {BooksState} from "../../store/books.reducer";
-import {deselectBookAction, selectBookAction, setBooksAction} from "../../store/books.actions";
+import {
+  deselectBookAction,
+  loadBooksAction,
+  saveBookAction,
+  selectBookAction,
+} from "../../store/books.actions";
 import {BooksSelector} from "../../store/books.selectors";
 
 @Component({
@@ -22,10 +26,8 @@ export class BookListComponent implements OnDestroy {
 
   private readonly unsubscribe = new Subject();
 
-  constructor(private readonly bookService: BooksService, private readonly store: Store<BooksState>) {
-    this.bookService.getBooks()
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(books => this.store.dispatch(setBooksAction({books})));
+  constructor(private readonly store: Store<BooksState>) {
+    this.store.dispatch(loadBooksAction());
     this.books$ = this.store.pipe(select(BooksSelector.getBooks));
     this.selectedBook$ = this.store.pipe(select(BooksSelector.getSelectedBook));
     this.selectedBook$
@@ -57,11 +59,7 @@ export class BookListComponent implements OnDestroy {
   }
 
   saveBook(book: Book) {
-    this.bookService.saveBook(book).pipe(takeUntil(this.unsubscribe)).subscribe(_ => {
-      this.bookService.getBooks()
-        .pipe(takeUntil(this.unsubscribe))
-        .subscribe(books => this.store.dispatch(setBooksAction({ books })));
-      this.store.dispatch(deselectBookAction());
-    });
+    this.store.dispatch(saveBookAction({ book }));
+    this.store.dispatch(deselectBookAction());
   }
 }
