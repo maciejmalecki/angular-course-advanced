@@ -3,7 +3,6 @@ import {BooksService} from "../../services/books.service";
 import {ComponentFixture, TestBed, tick} from "@angular/core/testing";
 import {ReactiveFormsModule} from "@angular/forms";
 import {SharedModule} from "../../../shared/shared.module";
-import {of} from "rxjs";
 import {Book} from "../../model/book";
 import {MockStore, provideMockStore} from "@ngrx/store/testing";
 import {BooksState, initialBooksState} from "../../store/books.reducer";
@@ -11,11 +10,12 @@ import {BookDetailsComponent} from "../book-details/book-details.component";
 import {EditionDetailsComponent} from "../book-details/edition-details/edition-details.component";
 import {BooksSelector} from "../../store/books.selectors";
 import {Injector} from "@angular/core";
+import {ofType} from "@ngrx/effects";
+import {saveBookAction} from "../../store/books.actions";
 
 describe('BookListComponent', () => {
 
   let component: BookListComponent;
-  let bookServiceMock: any;
   let storeMock: MockStore<BooksState>;
 
   // redux
@@ -56,13 +56,6 @@ describe('BookListComponent', () => {
     }
   }];
 
-  beforeEach(() => {
-    bookServiceMock = {
-      getBooks: () => of(books()),
-      saveBook: (book: Book) => of(book)
-    };
-  });
-
   describe('[class]', () => {
 
     beforeEach(() => {
@@ -83,7 +76,7 @@ describe('BookListComponent', () => {
         ]
       });
       storeMock = injector.get(MockStore);
-      component = new BookListComponent(bookServiceMock, storeMock);
+      component = new BookListComponent(storeMock);
     });
 
     it('has no selected book initially', () => {
@@ -118,7 +111,6 @@ describe('BookListComponent', () => {
 
     let fixture: ComponentFixture<BookListComponent>;
     let nativeElement: HTMLElement;
-    let booksService: BooksService;
 
     // nouns
     const bookList = () => nativeElement.querySelectorAll("li.list-group-item");
@@ -148,7 +140,6 @@ describe('BookListComponent', () => {
         declarations: [BookListComponent, BookDetailsComponent, EditionDetailsComponent],
         imports: [ReactiveFormsModule, SharedModule],
         providers: [
-          {provide: BooksService, useValue: bookServiceMock},
           provideMockStore({
             initialState: initialBooksState, selectors: [
               {
@@ -167,7 +158,6 @@ describe('BookListComponent', () => {
 
     beforeEach(() => {
       fixture = TestBed.createComponent(BookListComponent);
-      booksService = TestBed.inject(BooksService);
       storeMock = TestBed.inject(MockStore);
       // booksService = fixture.debugElement.injector.get(BooksService);
       component = fixture.componentInstance;
@@ -234,9 +224,22 @@ describe('BookListComponent', () => {
       expect(component.selectedBookId).toBeUndefined();
     });
 
-    it('saves modified book to the books service', () => {
+    it('saves modified book to the books service', (done) => {
       // given
-      spyOn(booksService, 'saveBook').and.callThrough();
+      storeMock.scannedActions$.pipe(ofType(saveBookAction)).subscribe(action => {
+        expect(action.book).toEqual({
+          id: 2,
+          title: "Foo",
+          author: "Bar",
+          description: "Some nonsense",
+          edition: {
+            publisher: 'Amazon2',
+            publishYear: 1992,
+            editionNumber: 3
+          }
+        });
+        done();
+      });
       clickBookAt(1);
       selectBook(books()[1]);
       cd();
@@ -251,18 +254,6 @@ describe('BookListComponent', () => {
       cd();
       // then
       expect(editor()).toBeFalsy();
-      expect(booksService.saveBook).toHaveBeenCalledOnceWith({
-        id: 2,
-        title: "Foo",
-        author: "Bar",
-        description: "Some nonsense",
-        edition: {
-          publisher: 'Amazon2',
-          publishYear: 1992,
-          editionNumber: 3
-        }
-      });
     });
-
   });
 });
