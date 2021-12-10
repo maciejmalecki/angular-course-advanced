@@ -3,13 +3,12 @@ import {BooksService} from "../../services/books.service";
 import {ComponentFixture, TestBed, tick} from "@angular/core/testing";
 import {ReactiveFormsModule} from "@angular/forms";
 import {SharedModule} from "../../../shared/shared.module";
-import {BehaviorSubject, of, Subject} from "rxjs";
+import {of} from "rxjs";
 import {Book} from "../../model/book";
 import {MockStore, provideMockStore} from "@ngrx/store/testing";
 import {BooksState, initialBooksState} from "../../store/books.reducer";
 import {BookDetailsComponent} from "../book-details/book-details.component";
 import {EditionDetailsComponent} from "../book-details/edition-details/edition-details.component";
-import {selectBookAction} from "../../store/books.actions";
 import {BooksSelector} from "../../store/books.selectors";
 import {Injector} from "@angular/core";
 
@@ -17,6 +16,13 @@ describe('BookListComponent', () => {
 
   let component: BookListComponent;
   let bookServiceMock: any;
+  let storeMock: MockStore<BooksState>;
+
+  // redux
+  const selectBook = (book: Book | null) => {
+    storeMock.overrideSelector(BooksSelector.getSelectedBook, book);
+    storeMock.refreshState();
+  };
 
   const books: () => Book[] = () => [{
     id: 1,
@@ -59,14 +65,23 @@ describe('BookListComponent', () => {
 
   describe('[class]', () => {
 
-    let storeMock: any;
-
     beforeEach(() => {
       const injector = Injector.create({
         providers: [
-          provideMockStore({ initialState: initialBooksState, selectors: [] })
+          provideMockStore({
+            initialState: initialBooksState, selectors: [
+              {
+                selector: BooksSelector.getBooks,
+                value: books()
+              },
+              {
+                selector: BooksSelector.getSelectedBook,
+                value: null
+              }
+            ]
+          })
         ]
-      })
+      });
       storeMock = injector.get(MockStore);
       component = new BookListComponent(bookServiceMock, storeMock);
     });
@@ -80,8 +95,8 @@ describe('BookListComponent', () => {
       const toBeSelected = books()[1];
       // when
       component.selectBook(toBeSelected);
+      selectBook(toBeSelected);
       // then
-      expect(storeMock.dispatch).toHaveBeenCalledWith(selectBookAction({book: toBeSelected}));
       expect(component.selectedBookId).toEqual(toBeSelected.id);
     });
 
@@ -89,9 +104,11 @@ describe('BookListComponent', () => {
       // given
       const toBeSelected = books()[1];
       component.selectBook(toBeSelected);
+      selectBook(toBeSelected);
       expect(component.selectedBookId).toEqual(toBeSelected.id);
       // when
       component.cancelEditing();
+      selectBook(null);
       // then
       expect(component.selectedBookId).toBeUndefined();
     });
@@ -102,7 +119,6 @@ describe('BookListComponent', () => {
     let fixture: ComponentFixture<BookListComponent>;
     let nativeElement: HTMLElement;
     let booksService: BooksService;
-    let store: MockStore<BooksState>;
 
     // nouns
     const bookList = () => nativeElement.querySelectorAll("li.list-group-item");
@@ -132,8 +148,9 @@ describe('BookListComponent', () => {
         declarations: [BookListComponent, BookDetailsComponent, EditionDetailsComponent],
         imports: [ReactiveFormsModule, SharedModule],
         providers: [
-          { provide: BooksService, useValue: bookServiceMock },
-          provideMockStore({ initialState: initialBooksState, selectors: [
+          {provide: BooksService, useValue: bookServiceMock},
+          provideMockStore({
+            initialState: initialBooksState, selectors: [
               {
                 selector: BooksSelector.getBooks,
                 value: books()
@@ -142,7 +159,8 @@ describe('BookListComponent', () => {
                 selector: BooksSelector.getSelectedBook,
                 value: null
               }
-            ] }),
+            ]
+          }),
         ]
       }).compileComponents();
     });
@@ -150,7 +168,7 @@ describe('BookListComponent', () => {
     beforeEach(() => {
       fixture = TestBed.createComponent(BookListComponent);
       booksService = TestBed.inject(BooksService);
-      store = TestBed.inject(MockStore);
+      storeMock = TestBed.inject(MockStore);
       // booksService = fixture.debugElement.injector.get(BooksService);
       component = fixture.componentInstance;
       nativeElement = fixture.nativeElement;
@@ -172,8 +190,7 @@ describe('BookListComponent', () => {
       expect(editor()).toBeFalsy();
       // when
       clickBookAt(1);
-      store.overrideSelector(BooksSelector.getSelectedBook, books()[1]);
-      store.refreshState();
+      selectBook(books()[1]);
       cd();
       // then
       expect(editor()).toBeTruthy();
@@ -189,11 +206,13 @@ describe('BookListComponent', () => {
       // given
       expect(component.selectedBookId).toBeUndefined();
       clickBookAt(1);
-      fixture.detectChanges();
+      selectBook(books()[1]);
+      cd();
       expect(editor()).toBeTruthy();
       // when
       clickBookAt(1);
-      fixture.detectChanges();
+      selectBook(null);
+      cd();
       // then
       expect(editor()).toBeFalsy();
       expect(component.selectedBookId).toBeUndefined();
@@ -203,11 +222,13 @@ describe('BookListComponent', () => {
       // given
       expect(component.selectedBookId).toBeUndefined();
       clickBookAt(1);
-      fixture.detectChanges();
+      selectBook(books()[1]);
+      cd();
       expect(editor()).toBeTruthy();
       // when
       clickCancel();
-      fixture.detectChanges();
+      selectBook(null);
+      cd();
       // then
       expect(editor()).toBeFalsy();
       expect(component.selectedBookId).toBeUndefined();
@@ -217,6 +238,7 @@ describe('BookListComponent', () => {
       // given
       spyOn(booksService, 'saveBook').and.callThrough();
       clickBookAt(1);
+      selectBook(books()[1]);
       cd();
       expect(editor()).toBeTruthy();
       // when
@@ -225,6 +247,7 @@ describe('BookListComponent', () => {
       editField(description(), 'Some nonsense');
       cd();
       clickSave();
+      selectBook(null);
       cd();
       // then
       expect(editor()).toBeFalsy();
