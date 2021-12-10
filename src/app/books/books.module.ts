@@ -12,6 +12,7 @@ import {BOOKS_FEATURE, booksStateReducer} from "./store/books.reducer";
 import {BooksRoutingModule} from "./books-routing.module";
 import {EffectsModule} from "@ngrx/effects";
 import {BooksEffects} from "./store/books.effects";
+import {BooksStoreFacade} from "./services/books-store-facade.service";
 
 
 
@@ -35,7 +36,8 @@ import {BooksEffects} from "./store/books.effects";
     EffectsModule.forFeature([BooksEffects])
   ],
   providers: [
-    BooksService
+    BooksService,
+    BooksStoreFacade
   ]
 })
 export class BooksModule { }
