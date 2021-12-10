@@ -3,29 +3,50 @@ import {BooksService} from "../../services/books.service";
 import {ComponentFixture, TestBed, tick} from "@angular/core/testing";
 import {ReactiveFormsModule} from "@angular/forms";
 import {SharedModule} from "../../../shared/shared.module";
-import {of} from "rxjs";
+import {BehaviorSubject, of, Subject} from "rxjs";
 import {Book} from "../../model/book";
+import {MockStore, provideMockStore} from "@ngrx/store/testing";
+import {BooksState, initialBooksState} from "../../store/books.reducer";
+import {BookDetailsComponent} from "../book-details/book-details.component";
+import {EditionDetailsComponent} from "../book-details/edition-details/edition-details.component";
+import {first} from "rxjs/operators";
+import {selectBookAction} from "../../store/books.actions";
 
 describe('BookListComponent', () => {
 
   let component: BookListComponent;
   let bookServiceMock: any;
 
-  const books = () => [{
+  const books: () => Book[] = () => [{
     id: 1,
     title: 'Solaris',
     author: 'Stanisław Lem',
-    description: 'Solaris chronicles the ultimate futility of attempted communications with the extraterrestrial life inhabiting a distant alien planet named Solaris. The planet is almost completely covered with an ocean of gel that is revealed to be a single, planet-encompassing entity. Terran scientists conjecture it is a living and a sentient being, and attempt to communicate with it.'
+    description: 'Solaris chronicles the ultimate futility of attempted communications with the extraterrestrial life inhabiting a distant alien planet named Solaris. The planet is almost completely covered with an ocean of gel that is revealed to be a single, planet-encompassing entity. Terran scientists conjecture it is a living and a sentient being, and attempt to communicate with it.',
+    edition: {
+      publisher: 'Amazon1',
+      publishYear: 1991,
+      editionNumber: 2
+    }
   }, {
     id: 2,
     title: '2001: A Space Odyssey',
     author: 'Aurthur C. Clarke',
-    description: 'A mysterious alien civilization uses a tool with the appearance of a large crystalline monolith to investigate worlds across the galaxy and, if possible, to encourage the development of intelligent life. The book shows one such monolith appearing in prehistoric Africa, 3 million years ago (in the movie, 4 mya), where it inspires a starving group of hominids to develop tools. The hominids use their tools to kill animals and eat meat, ending their starvation. They then use the tools to kill a leopard preying on them; the next day, the main ape character, Moon-Watcher, uses a club to kill the leader of a rival tribe. The book suggests that the monolith was instrumental in awakening intelligence.'
+    description: 'A mysterious alien civilization uses a tool with the appearance of a large crystalline monolith to investigate worlds across the galaxy and, if possible, to encourage the development of intelligent life. The book shows one such monolith appearing in prehistoric Africa, 3 million years ago (in the movie, 4 mya), where it inspires a starving group of hominids to develop tools. The hominids use their tools to kill animals and eat meat, ending their starvation. They then use the tools to kill a leopard preying on them; the next day, the main ape character, Moon-Watcher, uses a club to kill the leader of a rival tribe. The book suggests that the monolith was instrumental in awakening intelligence.',
+    edition: {
+      publisher: 'Amazon2',
+      publishYear: 1992,
+      editionNumber: 3
+    }
   }, {
     id: 3,
     title: 'Ubik',
     author: 'Phillip K. Dick',
-    description: 'By the year 1992, humanity has colonized the Moon and psychic powers are common. The protagonist, Joe Chip, is a debt-ridden technician working for Runciter Associates, a "prudence organization" employing "inertials"—people with the ability to negate the powers of telepaths and "precogs"—to enforce the privacy of clients. The company is run by Glen Runciter, assisted by his deceased wife Ella who is kept in a state of "half-life", a form of cryonic suspension that allows the deceased limited consciousness and ability to communicate. While consulting with Ella, Runciter discovers that her consciousness is being invaded by another half-lifer named Jory Miller.'
+    description: 'By the year 1992, humanity has colonized the Moon and psychic powers are common. The protagonist, Joe Chip, is a debt-ridden technician working for Runciter Associates, a "prudence organization" employing "inertials"—people with the ability to negate the powers of telepaths and "precogs"—to enforce the privacy of clients. The company is run by Glen Runciter, assisted by his deceased wife Ella who is kept in a state of "half-life", a form of cryonic suspension that allows the deceased limited consciousness and ability to communicate. While consulting with Ella, Runciter discovers that her consciousness is being invaded by another half-lifer named Jory Miller.',
+    edition: {
+      publisher: 'Amazon3',
+      publishYear: 1993,
+      editionNumber: 4
+    }
   }];
 
   beforeEach(() => {
@@ -35,14 +56,22 @@ describe('BookListComponent', () => {
     };
   });
 
-  describe('[class]', () => {
+  fdescribe('[class]', () => {
+
+    let storeMock: any;
+    let stateSubject: Subject<{ books: BooksState }>;
 
     beforeEach(() => {
-      component = new BookListComponent(bookServiceMock);
+      stateSubject = new BehaviorSubject({ books: initialBooksState} );
+      storeMock = {
+        pipe: jasmine.createSpy().and.returnValue(stateSubject),
+        dispatch: jasmine.createSpy()
+      };
+      component = new BookListComponent(bookServiceMock, storeMock);
     });
 
     it('has no selected book initially', () => {
-      expect(component.selectedBook).toBeNull();
+      expect(component.selectedBookId).toBeUndefined();
     });
 
     it('allows to select a book', () => {
@@ -50,19 +79,21 @@ describe('BookListComponent', () => {
       const toBeSelected = books()[1];
       // when
       component.selectBook(toBeSelected);
+      stateSubject.next({ books: { books: [], selectedBook: toBeSelected }});
       // then
-      expect(component.selectedBook).toEqual(toBeSelected);
+      expect(storeMock.dispatch).toHaveBeenCalledWith(selectBookAction({book: toBeSelected}));
+      expect(component.selectedBookId).toEqual(toBeSelected.id);
     });
 
     it('allows to cancel the editing', () => {
       // given
       const toBeSelected = books()[1];
       component.selectBook(toBeSelected);
-      expect(component.selectedBook).toEqual(toBeSelected);
+      expect(component.selectedBookId).toEqual(toBeSelected.id);
       // when
       component.cancelEditing();
       // then
-      expect(component.selectedBook).toBeNull();
+      expect(component.selectedBookId).toBeUndefined();
     });
   });
 
@@ -71,6 +102,7 @@ describe('BookListComponent', () => {
     let fixture: ComponentFixture<BookListComponent>;
     let nativeElement: HTMLElement;
     let booksService: BooksService;
+    let store: MockStore<BooksState>;
 
     // nouns
     const bookList = () => nativeElement.querySelectorAll("li.list-group-item");
@@ -97,15 +129,19 @@ describe('BookListComponent', () => {
 
     beforeEach(async () => {
       await TestBed.configureTestingModule({
-        declarations: [BookListComponent],
+        declarations: [BookListComponent, BookDetailsComponent, EditionDetailsComponent],
         imports: [ReactiveFormsModule, SharedModule],
-        providers: [{ provide: BooksService, useValue: bookServiceMock }]
+        providers: [
+          { provide: BooksService, useValue: bookServiceMock },
+          provideMockStore({ initialState: initialBooksState }),
+        ]
       }).compileComponents();
     });
 
     beforeEach(() => {
       fixture = TestBed.createComponent(BookListComponent);
       booksService = TestBed.inject(BooksService);
+      store = TestBed.inject(MockStore);
       // booksService = fixture.debugElement.injector.get(BooksService);
       component = fixture.componentInstance;
       nativeElement = fixture.nativeElement;
@@ -116,14 +152,19 @@ describe('BookListComponent', () => {
       expect(component).toBeTruthy();
     });
 
-    it('renders a list of books', () => {
-      const liElements = bookList();
-      expect(liElements.length).toBe(3);
+    it('renders a list of books', (done) => {
+      store.setState({ books: books(), selectedBook: null});
+      component.books$.pipe(first()).subscribe(value => {
+        expect(value).toHaveSize(3);
+        done();
+      })
+      // const liElements = bookList();
+      // expect(liElements.length).toBe(3);
     });
 
     it('selects book on clicking', () => {
       // given
-      expect(component.selectedBook).toBeNull();
+      expect(component.selectedBookId).toBeUndefined();
       expect(editor()).toBeFalsy();
       // when
       clickBookAt(1);
@@ -131,7 +172,7 @@ describe('BookListComponent', () => {
       // then
       expect(editor()).toBeTruthy();
       const toBeSelected = books()[1];
-      expect(component.selectedBook).toEqual(toBeSelected);
+      expect(component.selectedBookId).toEqual(toBeSelected.id);
       expect(title().value).toBe(toBeSelected.title);
       expect(author().value).toBe(toBeSelected.author);
       expect(description().value).toBe(toBeSelected.description);
@@ -140,7 +181,7 @@ describe('BookListComponent', () => {
 
     it('closes editor after clicking on selected book', () => {
       // given
-      expect(component.selectedBook).toBeNull();
+      expect(component.selectedBookId).toBeUndefined();
       clickBookAt(1);
       fixture.detectChanges();
       expect(editor()).toBeTruthy();
@@ -149,12 +190,12 @@ describe('BookListComponent', () => {
       fixture.detectChanges();
       // then
       expect(editor()).toBeFalsy();
-      expect(component.selectedBook).toBeNull();
+      expect(component.selectedBookId).toBeUndefined();
     });
 
     it('closes editor after clicking on cancel button', () => {
       // given
-      expect(component.selectedBook).toBeNull();
+      expect(component.selectedBookId).toBeUndefined();
       clickBookAt(1);
       fixture.detectChanges();
       expect(editor()).toBeTruthy();
@@ -163,7 +204,7 @@ describe('BookListComponent', () => {
       fixture.detectChanges();
       // then
       expect(editor()).toBeFalsy();
-      expect(component.selectedBook).toBeNull();
+      expect(component.selectedBookId).toBeUndefined();
     });
 
     it('saves modified book to the books service', () => {
@@ -185,7 +226,12 @@ describe('BookListComponent', () => {
         id: 2,
         title: "Foo",
         author: "Bar",
-        description: "Some nonsense"
+        description: "Some nonsense",
+        edition: {
+          publisher: 'Amazon2',
+          publishYear: 1992,
+          editionNumber: 3
+        }
       });
     });
 
