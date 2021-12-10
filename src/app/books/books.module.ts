@@ -13,6 +13,7 @@ import {BooksRoutingModule} from "./books-routing.module";
 import {EffectsModule} from "@ngrx/effects";
 import {BooksEffects} from "./store/books.effects";
 import {BooksStoreFacade} from "./services/books-store-facade.service";
+import {WidgetsModule} from "../../../projects/widgets/src/lib/widgets.module";
 
 
 
@@ -30,6 +31,7 @@ import {BooksStoreFacade} from "./services/books-store-facade.service";
     CommonModule,
     ReactiveFormsModule,
     SharedModule,
+    WidgetsModule,
     HttpClientModule,
     BooksRoutingModule,
     StoreModule.forFeature(BOOKS_FEATURE, booksStateReducer),
