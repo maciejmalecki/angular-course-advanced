@@ -9,8 +9,9 @@ import {MockStore, provideMockStore} from "@ngrx/store/testing";
 import {BooksState, initialBooksState} from "../../store/books.reducer";
 import {BookDetailsComponent} from "../book-details/book-details.component";
 import {EditionDetailsComponent} from "../book-details/edition-details/edition-details.component";
-import {first} from "rxjs/operators";
 import {selectBookAction} from "../../store/books.actions";
+import {BooksSelector} from "../../store/books.selectors";
+import {Injector} from "@angular/core";
 
 describe('BookListComponent', () => {
 
@@ -56,17 +57,17 @@ describe('BookListComponent', () => {
     };
   });
 
-  fdescribe('[class]', () => {
+  describe('[class]', () => {
 
     let storeMock: any;
-    let stateSubject: Subject<{ books: BooksState }>;
 
     beforeEach(() => {
-      stateSubject = new BehaviorSubject({ books: initialBooksState} );
-      storeMock = {
-        pipe: jasmine.createSpy().and.returnValue(stateSubject),
-        dispatch: jasmine.createSpy()
-      };
+      const injector = Injector.create({
+        providers: [
+          provideMockStore({ initialState: initialBooksState, selectors: [] })
+        ]
+      })
+      storeMock = injector.get(MockStore);
       component = new BookListComponent(bookServiceMock, storeMock);
     });
 
@@ -79,7 +80,6 @@ describe('BookListComponent', () => {
       const toBeSelected = books()[1];
       // when
       component.selectBook(toBeSelected);
-      stateSubject.next({ books: { books: [], selectedBook: toBeSelected }});
       // then
       expect(storeMock.dispatch).toHaveBeenCalledWith(selectBookAction({book: toBeSelected}));
       expect(component.selectedBookId).toEqual(toBeSelected.id);
@@ -133,7 +133,16 @@ describe('BookListComponent', () => {
         imports: [ReactiveFormsModule, SharedModule],
         providers: [
           { provide: BooksService, useValue: bookServiceMock },
-          provideMockStore({ initialState: initialBooksState }),
+          provideMockStore({ initialState: initialBooksState, selectors: [
+              {
+                selector: BooksSelector.getBooks,
+                value: books()
+              },
+              {
+                selector: BooksSelector.getSelectedBook,
+                value: null
+              }
+            ] }),
         ]
       }).compileComponents();
     });
@@ -152,14 +161,9 @@ describe('BookListComponent', () => {
       expect(component).toBeTruthy();
     });
 
-    it('renders a list of books', (done) => {
-      store.setState({ books: books(), selectedBook: null});
-      component.books$.pipe(first()).subscribe(value => {
-        expect(value).toHaveSize(3);
-        done();
-      })
-      // const liElements = bookList();
-      // expect(liElements.length).toBe(3);
+    it('renders a list of books', () => {
+      const liElements = bookList();
+      expect(liElements.length).toBe(3);
     });
 
     it('selects book on clicking', () => {
@@ -168,6 +172,8 @@ describe('BookListComponent', () => {
       expect(editor()).toBeFalsy();
       // when
       clickBookAt(1);
+      store.overrideSelector(BooksSelector.getSelectedBook, books()[1]);
+      store.refreshState();
       cd();
       // then
       expect(editor()).toBeTruthy();

@@ -3,8 +3,13 @@
 @import "~bootstrap/scss/bootstrap";
 
 form {
-  input,textarea,app-input {
+  textarea {
     &.ng-invalid.ng-touched {
+      @extend .is-invalid;
+    }
+  }
+  app-input.ng-invalid.ng-touched {
+    input {
       @extend .is-invalid;
     }
   }

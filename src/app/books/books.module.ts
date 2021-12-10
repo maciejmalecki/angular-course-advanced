@@ -9,6 +9,7 @@ import { BookDetailsComponent } from './components/book-details/book-details.com
 import { EditionDetailsComponent } from './components/book-details/edition-details/edition-details.component';
 import {StoreModule} from "@ngrx/store";
 import {BOOKS_FEATURE, booksStateReducer} from "./store/books.reducer";
+import {BooksRoutingModule} from "./books-routing.module";
 
 
 
@@ -27,6 +28,7 @@ import {BOOKS_FEATURE, booksStateReducer} from "./store/books.reducer";
     ReactiveFormsModule,
     SharedModule,
     HttpClientModule,
+    BooksRoutingModule,
     StoreModule.forFeature(BOOKS_FEATURE, booksStateReducer)
   ],
   providers: [
